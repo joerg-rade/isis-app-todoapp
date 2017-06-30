@@ -18,19 +18,38 @@
   under the License.
 -->
 <web-app id="WebApp_ID" version="2.4"
-    xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+         xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
     <display-name>Todo app</display-name>
 
     <welcome-file-list>
-        <welcome-file>about/index.html</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+
 
     <!-- shiro security configuration -->
     <listener>
         <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
     </listener>
+
+
+    <filter>
+        <filter-name>CORS Filter</filter-name>
+        <filter-class>org.ebaysf.web.cors.CORSFilter</filter-class>
+        <init-param>
+            <param-name>cors.allowed.origins</param-name>
+            <param-value>*</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cors.allowed.headers</param-name>
+            <param-value>Content-Type,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Authorization,Cache-Control,If-Modified-Since,Pragma</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CORS Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>ShiroFilter</filter-name>
@@ -112,7 +131,7 @@
     </filter>
     <filter-mapping>
         <filter-name>IsisLogOnExceptionFilter</filter-name>
-        <url-pattern>/wicket/*</url-pattern>
+        <url-pattern>/backend/*</url-pattern>
     </filter-mapping>
     <filter-mapping>
         <filter-name>IsisLogOnExceptionFilter</filter-name>
@@ -157,7 +176,7 @@
         <filter-name>ResourceCachingFilter</filter-name>
         <url-pattern>*.swf</url-pattern>
     </filter-mapping>
-    
+
     <servlet>
         <servlet-name>Resource</servlet-name>
         <servlet-class>org.apache.isis.core.webapp.content.ResourceServlet</servlet-class>
@@ -222,7 +241,7 @@
     </filter>
     <filter-mapping>
         <filter-name>WicketFilter</filter-name>
-        <url-pattern>/wicket/*</url-pattern>
+        <url-pattern>/admin/*</url-pattern>
     </filter-mapping>
 
 
@@ -233,8 +252,8 @@
          -->
         <param-value>development</param-value>
     </context-param>
-    
-   
+
+
     <!--
     -
     - config specific to the restfulobjects-viewer
@@ -248,18 +267,16 @@
     <listener>
         <listener-class>org.apache.isis.core.webapp.IsisWebAppBootstrapper</listener-class>
     </listener>
-
     <context-param>
         <param-name>deploymentType</param-name>
         <param-value>SERVER_EXPLORATION</param-value>
     </context-param>
-
     <context-param>
         <param-name>isis.viewers</param-name>
         <param-value>restfulobjects</param-value>
     </context-param>    
-    -->    
-    
+    -->
+
     <!-- bootstrap the RestEasy framework -->
     <listener>
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
@@ -270,12 +287,12 @@
         <param-name>javax.ws.rs.Application</param-name>
         <param-value>org.apache.isis.viewer.restfulobjects.server.RestfulObjectsApplication</param-value>
     </context-param>
-    
+
     <context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
         <param-value>/restful/</param-value>
     </context-param>
-    
+
 
     <!-- authenticate user, set up an Isis session -->
     <filter>
@@ -284,9 +301,10 @@
         <!-- authentication required for REST -->
         <init-param>
             <param-name>authenticationSessionStrategy</param-name>
-            <param-value>org.apache.isis.viewer.restfulobjects.server.authentication.AuthenticationSessionStrategyTrusted</param-value>
+            <param-value>org.apache.isis.viewer.restfulobjects.server.authentication.AuthenticationSessionStrategyBasicAuth</param-value>
         </init-param>
         <init-param>
+            <!-- what to do if no session was found; we simply return a 401 (a basic authentication challenge causes browser to populate) -->
             <param-name>whenNoSession</param-name>
             <param-value>auto</param-value>
         </init-param>
@@ -321,47 +339,19 @@
         <url-pattern>/restful/*</url-pattern>
     </servlet-mapping>
 
-	<filter>
-		<filter-name>cross-origin</filter-name>
-		<filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
-		<init-param>
-			<param-name>allowedOrigins</param-name>
-			<param-value>*</param-value>
-		</init-param>
-		<init-param>
-			<param-name>allowedMethods</param-name>
-			<param-value>GET,POST,PUT,DELETE</param-value>
-		</init-param>
-		<init-param>
-			<param-name>allowedHeaders</param-name>
-			<param-value>*</param-value>
-		</init-param>
-		<init-param>
-			<param-name>preflightMaxAge</param-name>
-			<param-value>1800</param-value>
-		</init-param>
-		<init-param>
-			<param-name>allowCredentials</param-name>
-			<param-value>true</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>cross-origin</filter-name>
-		<url-pattern>/restful/*</url-pattern>
-	</filter-mapping>
 
     <!-- 
     uncomment to use container-managed datasource;
     for both container-managed (JTA) and non-container-managed transactions
      -->
-     <!-- 
-    <resource-ref>
-        <description>db</description>
-        <res-ref-name>jdbc/quickstart</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-      -->
+    <!-- 
+   <resource-ref>
+       <description>db</description>
+       <res-ref-name>jdbc/quickstart</res-ref-name>
+       <res-type>javax.sql.DataSource</res-type>
+       <res-auth>Container</res-auth>
+   </resource-ref>
+     -->
 
     <!--
     uncomment to use container-managed datasource

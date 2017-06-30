@@ -1,3 +1,5 @@
+Login: todoapp-admin/pass
+
 # isis-app-todoapp #
 
 [![Build Status](https://travis-ci.org/isisaddons/isis-app-todoapp.png?branch=master)](https://travis-ci.org/isisaddons/isis-app-todoapp)

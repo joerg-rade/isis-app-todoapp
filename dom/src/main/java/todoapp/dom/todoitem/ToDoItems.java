@@ -121,7 +121,7 @@ public class ToDoItems {
             final Subcategory subcategory,
             @ParameterLayout(named="Completed?") final boolean completed) {
             // an example "naive" implementation (filtered in Java code, not DBMS)
-        return container.allMatches(ToDoItem.class, 
+        return container.allMatches(ToDoItem.class,
                 Predicates.and(
                     ToDoItem.Predicates.thoseWithAtPath(currentUsersAtPath()),
                     ToDoItem.Predicates.thoseCompleted(completed),
@@ -141,8 +141,8 @@ public class ToDoItems {
         return Subcategory.listFor(category);
     }
     public String validateCategorized(
-            final Category category, 
-            final Subcategory subcategory, 
+            final Category category,
+            final Subcategory subcategory,
             final boolean completed) {
         return Subcategory.validate(category, subcategory);
     }
@@ -177,8 +177,8 @@ public class ToDoItems {
         return Subcategory.listFor(category);
     }
     public String validateNewToDo(
-            final String description, 
-            final Category category, final Subcategory subcategory, 
+            final String description,
+            final Category category, final Subcategory subcategory,
             final LocalDate dueBy, final BigDecimal cost) {
         return Subcategory.validate(category, subcategory);
     }
@@ -194,8 +194,8 @@ public class ToDoItems {
     //region > helpers
     @Programmatic // for use by fixtures
     private ToDoItem newToDo(
-            final String description, 
-            final Category category, 
+            final String description,
+            final Category category,
             final Subcategory subcategory,
             final String username,
             final LocalDate dueBy,
@@ -216,7 +216,7 @@ public class ToDoItems {
         toDoItem.setCost(cost);
 
         container.persist(toDoItem);
-        container.flush();
+//        container.flush();
 
         return toDoItem;
     }
